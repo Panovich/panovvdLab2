@@ -8,7 +8,8 @@ import tech.reliab.course.panovvd.bank.entity.base.Account;
 
 import java.time.LocalDate;
 import java.util.Date;
-@Getter @Setter @ToString(exclude = {"issuer", "assignedEmployee", "payementAccount"})
+//@ToString(exclude = {"issuer", "assignedEmployee", "payementAccount"})
+@Getter @Setter
 public class CreditAccount extends Account {
     private Bank issuer;
     private LocalDate issued;
@@ -33,5 +34,13 @@ public class CreditAccount extends Account {
         this.rate = rate;
         this.assignedEmployee = assignedEmployee;
         this.payementAccount = payementAccount;
+    }
+
+    public String toString() {
+        String result = this.getClass().getSimpleName();
+        result = String.format("%s(issuer=%s, issued=%s, expiration=%s, months=%d, money=%d, mpayment=%d, rate=%f, assignedEmpl=%s, payAccID=%s)",
+        result, this.issuer.getName(), this.issued.toString(), this.expiration.toString(), this.months, this.money, this.monthlyPayment, this.rate,
+        this.assignedEmployee.getName(), this.payementAccount.getId());
+        return result;
     }
 }

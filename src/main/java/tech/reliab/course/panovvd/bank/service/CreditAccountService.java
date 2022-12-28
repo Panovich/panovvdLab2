@@ -3,6 +3,7 @@ package tech.reliab.course.panovvd.bank.service;
 import tech.reliab.course.panovvd.bank.entity.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface CreditAccountService {
     CreditAccount create(User owner, Bank inBank,
@@ -15,4 +16,6 @@ public interface CreditAccountService {
     void update(CreditAccount creditAccount);
 
     void delete(CreditAccount creditAccount);
+
+    List<CreditAccount> requestUserAccounts(User user);
 }

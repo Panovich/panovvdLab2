@@ -9,7 +9,7 @@ import tech.reliab.course.panovvd.bank.entity.base.Man;
 import java.util.Date;
 import java.util.List;
 
-@Getter @Setter @ToString
+@Getter @Setter
 public class User extends Man {
     private String workplace;
     private int salary;
@@ -24,6 +24,14 @@ public class User extends Man {
         this.workplace = workplace;
         this.salary = salary;
         this.creditRating = creditRating;
+    }
+
+    public String toString() {
+        String result = this.getClass().getSimpleName();
+        result = String.format("%s(id=%d, name=%s, birthday=%s, workplace=%s, salary=%d, creditRating=%d)",
+                result, this.getId(), this.getName(), this.getBirthday().toString(), this.getWorkplace(),
+                    this.getSalary(), this.getCreditRating());
+        return result;
     }
 
 }

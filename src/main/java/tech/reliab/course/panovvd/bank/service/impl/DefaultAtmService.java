@@ -2,13 +2,12 @@ package tech.reliab.course.panovvd.bank.service.impl;
 
 import lombok.AllArgsConstructor;
 import tech.reliab.course.panovvd.bank.database.ATMRepository;
-import tech.reliab.course.panovvd.bank.entity.Bank;
-import tech.reliab.course.panovvd.bank.entity.BankAtm;
-import tech.reliab.course.panovvd.bank.entity.BankOffice;
-import tech.reliab.course.panovvd.bank.entity.Employee;
+import tech.reliab.course.panovvd.bank.entity.*;
 import tech.reliab.course.panovvd.bank.service.AtmService;
 import tech.reliab.course.panovvd.bank.service.BankOfficeService;
 import tech.reliab.course.panovvd.bank.service.BankService;
+
+import java.util.List;
 
 @AllArgsConstructor
 public class DefaultAtmService implements AtmService {
@@ -19,7 +18,7 @@ public class DefaultAtmService implements AtmService {
     public DefaultAtmService(BankService baseBankService, BankOfficeService baseOfficeService) {
         bankService = baseBankService;
         officeService = baseOfficeService;
-        atmRepo = new ATMRepository(); //подгрузка бд
+        atmRepo = ATMRepository.getInstance(); //подгрузка бд
     }
 
     //CRUD операции **********************************
@@ -82,5 +81,10 @@ public class DefaultAtmService implements AtmService {
         target.setMoney(target.getMoney() + moneyDiff);
         target.getOwner().setMoney(target.getOwner().getMoney() + moneyDiff);
         target.getLocation().setMoney(target.getLocation().getMoney() + moneyDiff);
+    }
+
+    @Override
+    public List<BankAtm> requestATMs(BankOffice office) {
+        return atmRepo.requestATMsByOffice(office.getId());
     }
 }

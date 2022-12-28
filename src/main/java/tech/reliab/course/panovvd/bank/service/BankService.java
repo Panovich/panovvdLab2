@@ -2,6 +2,8 @@ package tech.reliab.course.panovvd.bank.service;
 
 import tech.reliab.course.panovvd.bank.entity.*;
 
+import java.util.List;
+
 public interface BankService {
 
     //круды
@@ -23,4 +25,6 @@ public interface BankService {
     void removeATM(Bank target, BankAtm ATM);
 
     void removeEmployee(Bank target, Employee newEmployee);
- }
+
+    List<Bank> requestAllBanks();
+}

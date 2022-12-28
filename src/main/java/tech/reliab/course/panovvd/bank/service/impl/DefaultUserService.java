@@ -1,19 +1,25 @@
 package tech.reliab.course.panovvd.bank.service.impl;
 
+import tech.reliab.course.panovvd.bank.database.CreditAccountRepository;
+import tech.reliab.course.panovvd.bank.database.PayementAccountRepository;
 import tech.reliab.course.panovvd.bank.database.UserRepository;
-import tech.reliab.course.panovvd.bank.entity.Employee;
-import tech.reliab.course.panovvd.bank.entity.User;
-import tech.reliab.course.panovvd.bank.service.BankService;
+import tech.reliab.course.panovvd.bank.entity.*;
 import tech.reliab.course.panovvd.bank.service.UserService;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class DefaultUserService implements UserService {
     private UserRepository userRepo;
+    private PayementAccountRepository payementAccountRepo;
+    private CreditAccountRepository creditAccountRepo;
 
     public DefaultUserService() {
-        userRepo = new UserRepository();
+        userRepo = UserRepository.getInstance();
+        payementAccountRepo = PayementAccountRepository.getInstance();
+        creditAccountRepo = CreditAccountRepository.getInstance();
     }
 
     // CRUD операции ****************************
@@ -57,5 +63,38 @@ public class DefaultUserService implements UserService {
     @Override
     public void update(User empl) {
         userRepo.update(empl);
+    }
+
+    @Override
+    public List<User> requestAllUsers() {
+        return userRepo.requestAllUsers();
+    }
+    @Override
+    public List<PaymentAccount> requestPaymentAccounts(User user) {
+        return payementAccountRepo.requestAccountsByOwner(user.getId());
+    }
+
+    @Override
+    public List<CreditAccount> requestCreditAccounts(User user) {
+        return creditAccountRepo.requestAccountsByOwner(user.getId());
+    }
+    @Override
+    public List<Bank> requestBankUses(User user) {
+        //кредитного счета без основного быть не может (наверное), поэтому короче пока по платежным находим
+        var Acclist = requestPaymentAccounts(user);
+        List<Bank> banksUsing = new ArrayList<>();
+        for (var acc: Acclist) {
+            if (!banksUsing.contains(acc.getIssuedBy())) {
+                banksUsing.add(acc.getIssuedBy());
+            }
+        }
+        return banksUsing;
+    }
+
+    @Override
+    public List<User> requestUsersByBank(Bank inBank) {
+        var userList = requestAllUsers();
+        userList = userList.stream().filter(x -> requestBankUses(x).contains(inBank)).toList();
+        return userList;
     }
 }

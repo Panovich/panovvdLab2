@@ -4,8 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-@Getter @Setter @Builder @ToString(exclude = {"owner"})
+//@ToString(exclude = {"owner"})
+@Getter @Setter @Builder
 public class BankOffice {
     private int id;
     private String name;
@@ -19,4 +19,12 @@ public class BankOffice {
     private boolean depositAvail;
     private int money;
     private int maintenanceCost;
+
+    public String toString() {
+        String result = this.getClass().getSimpleName();
+        result = String.format("%s(id=%d, name=%s, addr=%s, owner=%s, online=%b, atmSlot=%b, atmCount=%d, canLoan=%b, canWithdraw=%b, canDeposit=%b, money=%d, maintCost = %d)",
+                result, this.id, this.name, this.address, this.owner.getName(), this.online, this.atmSlot,
+                this.atmCount, this.loanAvail, this.withdrawAvail, this.depositAvail, this.money, this.maintenanceCost);
+        return result;
+    }
 }

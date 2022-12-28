@@ -1,14 +1,13 @@
 package tech.reliab.course.panovvd.bank.service.impl;
 
 import tech.reliab.course.panovvd.bank.database.EmployeeRepository;
-import tech.reliab.course.panovvd.bank.entity.Bank;
-import tech.reliab.course.panovvd.bank.entity.BankOffice;
-import tech.reliab.course.panovvd.bank.entity.Employee;
+import tech.reliab.course.panovvd.bank.entity.*;
 import tech.reliab.course.panovvd.bank.service.BankService;
 import tech.reliab.course.panovvd.bank.service.EmployeeService;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class DefaultEmployeeService implements EmployeeService {
@@ -17,7 +16,7 @@ public class DefaultEmployeeService implements EmployeeService {
 
     public DefaultEmployeeService(BankService baseBankService) {
         bankService = baseBankService;
-        emplRepo = new EmployeeRepository();
+        emplRepo = EmployeeRepository.getInstance();
     }
 
     // CRUD операции ****************************
@@ -27,9 +26,10 @@ public class DefaultEmployeeService implements EmployeeService {
      * @param emplName имя создаваемого сотрудника
      * @param workplace банк, в котором появится новый сотрудник
      */
+
+    static Random random = new Random();
     @Override
     public Employee create(String emplName, Bank workplace, BankOffice workOffice) {
-        Random random = new Random();
         Employee newOne = Employee
                 .builder()
                 .post("NOT ASSIGNED.")
@@ -41,6 +41,7 @@ public class DefaultEmployeeService implements EmployeeService {
                 .build();
         newOne.setName(emplName);
         newOne.setBirthday(Date.from(Instant.now()));
+        newOne.setSalary(random.nextInt(20001));
         emplRepo.writeNew(newOne); //это должно задать ID
 
         bankService.addEmployee(workplace, workOffice, newOne);
@@ -66,5 +67,10 @@ public class DefaultEmployeeService implements EmployeeService {
     @Override
     public void update(Employee empl) {
         emplRepo.update(empl);
+    }
+
+    @Override
+    public List<Employee> requestEmployeesByOffice(BankOffice office) {
+        return emplRepo.requestEmployeesByOffice(office.getId());
     }
 }

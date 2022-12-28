@@ -1,10 +1,9 @@
 package tech.reliab.course.panovvd.bank.service;
 
-import tech.reliab.course.panovvd.bank.entity.CreditAccount;
-import tech.reliab.course.panovvd.bank.entity.Employee;
-import tech.reliab.course.panovvd.bank.entity.User;
+import tech.reliab.course.panovvd.bank.entity.*;
 
 import java.util.Date;
+import java.util.List;
 
 public interface UserService {
     User create(String username, String workplace, Date birthday);
@@ -16,6 +15,16 @@ public interface UserService {
     void delete(User empl);
 
     void update(User empl);
+
+    List<User> requestAllUsers();
+
+    List<PaymentAccount> requestPaymentAccounts(User user);
+
+    List<CreditAccount> requestCreditAccounts(User user);
+
+    List<Bank> requestBankUses(User user);
+
+    List<User> requestUsersByBank(Bank inBank);
 
     //void addPaymentAccount(User owner, CreditAccount newAccount);
     //void addCreditAccount(User owner, CreditAccount newAccount);

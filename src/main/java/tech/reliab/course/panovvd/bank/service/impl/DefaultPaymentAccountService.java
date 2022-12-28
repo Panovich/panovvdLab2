@@ -7,6 +7,9 @@ import tech.reliab.course.panovvd.bank.entity.*;
 import tech.reliab.course.panovvd.bank.service.BankService;
 import tech.reliab.course.panovvd.bank.service.PaymentAccountService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 public class DefaultPaymentAccountService implements PaymentAccountService {
     private PayementAccountRepository paymentAccountRepo;
@@ -14,7 +17,7 @@ public class DefaultPaymentAccountService implements PaymentAccountService {
 
     public DefaultPaymentAccountService(BankService baseBankService) {
         bankService = baseBankService;
-        paymentAccountRepo = new PayementAccountRepository();
+        paymentAccountRepo = PayementAccountRepository.getInstance();
     }
 
     /**
@@ -50,5 +53,10 @@ public class DefaultPaymentAccountService implements PaymentAccountService {
     @Override
     public void delete(PaymentAccount creditAccount) {
         paymentAccountRepo.delete(creditAccount);
+    }
+
+    @Override
+    public List<PaymentAccount> requestUserAccounts(User user) {
+        return paymentAccountRepo.requestAccountsByOwner(user.getId());
     }
 }

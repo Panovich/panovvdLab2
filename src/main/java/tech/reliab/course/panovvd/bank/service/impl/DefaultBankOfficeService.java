@@ -2,33 +2,36 @@ package tech.reliab.course.panovvd.bank.service.impl;
 
 import lombok.AllArgsConstructor;
 import tech.reliab.course.panovvd.bank.database.OfficeRepository;
-import tech.reliab.course.panovvd.bank.entity.Bank;
-import tech.reliab.course.panovvd.bank.entity.BankAtm;
-import tech.reliab.course.panovvd.bank.entity.BankOffice;
-import tech.reliab.course.panovvd.bank.entity.Employee;
+import tech.reliab.course.panovvd.bank.entity.*;
 import tech.reliab.course.panovvd.bank.service.BankOfficeService;
 import tech.reliab.course.panovvd.bank.service.BankService;
+
+import java.util.List;
+import java.util.Random;
 
 @AllArgsConstructor
 public class DefaultBankOfficeService implements BankOfficeService {
     OfficeRepository officeRepo;
     BankService bankService;
 
+    static Random random = new Random(System.currentTimeMillis());
+
     public DefaultBankOfficeService(BankService baseBankService) {
         bankService = baseBankService;
-        officeRepo = new OfficeRepository();
+        officeRepo = OfficeRepository.getInstance();
     }
 
     // CRUD операции ****************************
 
     /**
-     * создаёт новый банковский офис в банке с указанным именем. После создания офис требуется сконфигурировать
+     * создаёт новый банковский офис в банке с указанным именем. Количество денег случайно. После создания офис требуется сконфигурировать
      * @param owner банк, который владеет офисом
      * @param officeName название нового офиса
      */
     @Override
     public BankOffice create(Bank owner, String officeName, String address) {
         BankOffice newOffice = BankOffice.builder().money(0).owner(owner).online(false).loanAvail(false).name(officeName).address(address).build();
+        newOffice.setMoney(random.nextInt(300000));
         bankService.addOffice(owner, newOffice);
         //тут какая то абстрактная запись в бд
         officeRepo.writeNew(newOffice); //автоматически присвоит ид при добавлении в бд
@@ -90,5 +93,10 @@ public class DefaultBankOfficeService implements BankOfficeService {
         from.setMaintenanceCost(from.getMaintenanceCost() - removingATM.getMaintenanceCost());
         from.setAtmSlot(true);
         from.setMoney(from.getMoney() - removingATM.getMoney());
+    }
+
+    @Override
+    public List<BankOffice> requestBankOffices(Bank bank) {
+        return officeRepo.requestOfficesByBank(bank.getId());
     }
 }

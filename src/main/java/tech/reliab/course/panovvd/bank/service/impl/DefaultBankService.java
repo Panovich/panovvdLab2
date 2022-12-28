@@ -5,6 +5,7 @@ import tech.reliab.course.panovvd.bank.database.BankRepository;
 import tech.reliab.course.panovvd.bank.entity.*;
 import tech.reliab.course.panovvd.bank.service.BankService;
 
+import java.util.List;
 import java.util.Random;
 
 @AllArgsConstructor
@@ -12,7 +13,7 @@ public class DefaultBankService implements BankService {
     private BankRepository BankRepo;
 
     public DefaultBankService() {
-        BankRepo = new BankRepository(); //тут типо синглтон с бдшкой будет
+        BankRepo = BankRepository.getInstance(); //тут типо синглтон с бдшкой будет
     }
 
     // CRUD операции ****************************
@@ -24,7 +25,8 @@ public class DefaultBankService implements BankService {
     @Override
     public Bank create(String bankName) {
         Random randomizer = new Random();
-        int money = randomizer.nextInt(1000000);
+        //int money = randomizer.nextInt(1000000);
+        int money = 0;
         int rating = randomizer.nextInt(100);
         float baseRate = 4;
         float creditRate = (float)(baseRate + randomizer.nextFloat(20)*(1-rating/100.0));
@@ -75,6 +77,7 @@ public class DefaultBankService implements BankService {
     @Override
     public void addOffice(Bank target, BankOffice newOffice) {
         increaseOfficeCount(target, 1);
+        target.setMoney(target.getMoney() + newOffice.getMoney());
         newOffice.setOwner(target);
     }
 
@@ -91,7 +94,7 @@ public class DefaultBankService implements BankService {
         increaseATMCount(target,1);
         target.setMoney(target.getMoney() + newATM.getMoney());
         office.setAtmCount(office.getAtmCount() + 1);
-        office.setMaintenanceCost(office.getMaintenanceCost() + 1);
+        //office.setMaintenanceCost(office.getMaintenanceCost() + 1);
         //и так далее...
     }
 
@@ -129,5 +132,9 @@ public class DefaultBankService implements BankService {
         newEmployee.setPost("None");
         newEmployee.setSalary(0);
         increaseEmployeeCount(target, -1);
+    }
+    @Override
+    public List<Bank> requestAllBanks() {
+        return BankRepo.readAll();
     }
 }

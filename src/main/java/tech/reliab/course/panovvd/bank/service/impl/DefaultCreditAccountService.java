@@ -8,6 +8,7 @@ import tech.reliab.course.panovvd.bank.service.CreditAccountService;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 
 @AllArgsConstructor
 public class DefaultCreditAccountService implements CreditAccountService {
@@ -15,7 +16,7 @@ public class DefaultCreditAccountService implements CreditAccountService {
     private BankService bankService;
 
     public DefaultCreditAccountService(BankService baseBankService) {
-        creditAccountRepo = new CreditAccountRepository();
+        creditAccountRepo = CreditAccountRepository.getInstance();
         bankService = baseBankService;
     }
 
@@ -72,5 +73,10 @@ public class DefaultCreditAccountService implements CreditAccountService {
     @Override
     public void delete(CreditAccount creditAccount) {
         creditAccountRepo.delete(creditAccount);
+    }
+
+    @Override
+    public List<CreditAccount> requestUserAccounts(User user) {
+        return creditAccountRepo.requestAccountsByOwner(user.getId());
     }
 }
