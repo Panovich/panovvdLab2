@@ -73,6 +73,34 @@ public class Main {
         }
     }
 
+    public static void printDetails(Bank bank) {
+        System.out.println("Офисы");
+        for (var office: officeService.requestBankOffices(bank)) {
+            System.out.print('\t');
+            System.out.println(office);
+            System.out.print('\t');
+            System.out.println("Банкоматы");
+            for (var atm: atmService.requestATMs(office)) {
+                System.out.print('\t');
+                System.out.print('\t');
+                System.out.println(atm);
+            }
+            System.out.print('\t');
+            System.out.println("Сотрудники");
+            for (var empl: emplService.requestEmployeesByOffice(office)) {
+                System.out.print('\t');
+                System.out.print('\t');
+                System.out.println(empl);
+            }
+        }
+        System.out.println("Клиенты");
+        for (var user: userService.requestUsersByBank(bank)) {
+            System.out.print('\t');
+            System.out.println(user);
+        }
+        System.out.println();
+    }
+
     public static void main(String[] args) {
 
         //создание сущностей каждого вида
@@ -125,33 +153,10 @@ public class Main {
             }
         }
 
+        //вывод всех банков
         for (var bank:  bankService.requestAllBanks()) {
             System.out.println(bank);
-            System.out.println("Офисы");
-            for (var office: officeService.requestBankOffices(bank)) {
-                System.out.print('\t');
-                System.out.println(office);
-                System.out.print('\t');
-                System.out.println("Банкоматы");
-                for (var atm: atmService.requestATMs(office)) {
-                    System.out.print('\t');
-                    System.out.print('\t');
-                    System.out.println(atm);
-                }
-                System.out.print('\t');
-                System.out.println("Сотрудники");
-                for (var empl: emplService.requestEmployeesByOffice(office)) {
-                    System.out.print('\t');
-                    System.out.print('\t');
-                    System.out.println(empl);
-                }
-            }
-            System.out.println("Клиенты");
-            for (var user: userService.requestUsersByBank(bank)) {
-                System.out.print('\t');
-                System.out.println(user);
-            }
-            System.out.println();
+            printDetails(bank);
         }
 
         //вывод пользователей со счетами
