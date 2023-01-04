@@ -166,6 +166,8 @@ public class Main {
         System.out.println("1) Получение кредита");
         System.out.println("2) Создание платежного счета");
         System.out.println("3) Получение данных о счетах");
+        System.out.println("4) Экспорт счетов из банка в txt");
+        System.out.println("5) Перенос счета в другой банк из txt");
         System.out.println("4) Выход");
     }
 
