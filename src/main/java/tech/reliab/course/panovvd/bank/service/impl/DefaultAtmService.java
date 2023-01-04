@@ -3,6 +3,7 @@ package tech.reliab.course.panovvd.bank.service.impl;
 import lombok.AllArgsConstructor;
 import tech.reliab.course.panovvd.bank.database.ATMRepository;
 import tech.reliab.course.panovvd.bank.entity.*;
+import tech.reliab.course.panovvd.bank.exceptions.OutOfMoneyException;
 import tech.reliab.course.panovvd.bank.service.AtmService;
 import tech.reliab.course.panovvd.bank.service.BankOfficeService;
 import tech.reliab.course.panovvd.bank.service.BankService;
@@ -86,5 +87,9 @@ public class DefaultAtmService implements AtmService {
     @Override
     public List<BankAtm> requestATMs(BankOffice office) {
         return atmRepo.requestATMsByOffice(office.getId());
+    }
+
+    public void withdrawMoney(BankAtm atm, int loanMoney) {
+        if (atm.getMoney() < loanMoney) throw new OutOfMoneyException("В банкомате нет столько денег!");
     }
 }

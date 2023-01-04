@@ -3,6 +3,8 @@ package tech.reliab.course.panovvd.bank.service.impl;
 import lombok.AllArgsConstructor;
 import tech.reliab.course.panovvd.bank.database.BankRepository;
 import tech.reliab.course.panovvd.bank.entity.*;
+import tech.reliab.course.panovvd.bank.exceptions.CreditValidatingException;
+import tech.reliab.course.panovvd.bank.exceptions.OutOfMoneyException;
 import tech.reliab.course.panovvd.bank.service.BankService;
 
 import java.util.List;
@@ -103,6 +105,7 @@ public class DefaultBankService implements BankService {
         increaseEmployeeCount(target, 1);
         newEmployee.setWorkplace(target);
         newEmployee.setWorkOffice(office);
+        if (newEmployee.isCanCredit()) office.setLoanAvail(true);
         office.setMaintenanceCost(office.getMaintenanceCost() + newEmployee.getSalary());
     }
 
@@ -136,5 +139,17 @@ public class DefaultBankService implements BankService {
     @Override
     public List<Bank> requestAllBanks() {
         return BankRepo.readAll();
+    }
+
+    public void validateСreditworthiness(Bank bank, User user) {
+        if (bank.getRating() > 50 && user.getCreditRating() < 5000) {
+            throw new CreditValidatingException(String.format("Ваш кредитный рейтинг (%d) не соответствует пороговому для получения кредита в этом" +
+                    "банке (порог: 5000)", user.getCreditRating()));
+        }
+    }
+
+
+    public void validateWithdrawMoneyAvailable(Bank bank, int loanMoney) {
+        if (bank.getMoney() < loanMoney) throw new OutOfMoneyException("В выбранном банке нет столько денег!");
     }
 }

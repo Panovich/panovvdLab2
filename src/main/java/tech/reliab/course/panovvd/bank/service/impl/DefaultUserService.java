@@ -4,6 +4,7 @@ import tech.reliab.course.panovvd.bank.database.CreditAccountRepository;
 import tech.reliab.course.panovvd.bank.database.PayementAccountRepository;
 import tech.reliab.course.panovvd.bank.database.UserRepository;
 import tech.reliab.course.panovvd.bank.entity.*;
+import tech.reliab.course.panovvd.bank.exceptions.AuthException;
 import tech.reliab.course.panovvd.bank.service.UserService;
 
 import java.util.ArrayList;
@@ -40,8 +41,10 @@ public class DefaultUserService implements UserService {
         newOne.setBirthday(birthday);
         newOne.setSalary(random.nextInt(10000));
         newOne.setCreditRating((newOne.getSalary() < 1000) ? 100 : (int)Math.ceil(newOne.getSalary()/10.0));
+        newOne.setPassword("qwerty");
 
         userRepo.writeNew(newOne);
+        newOne.setLogin(String.format("user_%d", newOne.getId()));
         return newOne;
     }
 
@@ -97,4 +100,15 @@ public class DefaultUserService implements UserService {
         userList = userList.stream().filter(x -> requestBankUses(x).contains(inBank)).toList();
         return userList;
     }
+
+    public User authentificateUser(String login, String password) {
+        var userList = requestAllUsers();
+        var machingUsers = userList.stream().filter(x -> x.getLogin().equals(login)).toList();
+        if (machingUsers.isEmpty()) throw new AuthException("Пользователь не найден");
+        var selectedUser = machingUsers.get(0);
+        if (!selectedUser.getPassword().equals(password)) throw new AuthException("Неверный пароль");
+        return selectedUser;
+    }
+
+
 }

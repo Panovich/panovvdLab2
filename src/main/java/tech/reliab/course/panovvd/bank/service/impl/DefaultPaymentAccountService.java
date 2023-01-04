@@ -59,4 +59,9 @@ public class DefaultPaymentAccountService implements PaymentAccountService {
     public List<PaymentAccount> requestUserAccounts(User user) {
         return paymentAccountRepo.requestAccountsByOwner(user.getId());
     }
+
+    public List<PaymentAccount> requestUserAccountsByBank(User user, Bank target) {
+        var accounts = requestUserAccounts(user);
+        return accounts.stream().filter(x -> x.getIssuedBy().getId() == target.getId()).toList();
+    }
 }

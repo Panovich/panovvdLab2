@@ -2,6 +2,7 @@ package tech.reliab.course.panovvd.bank.service.impl;
 
 import tech.reliab.course.panovvd.bank.database.EmployeeRepository;
 import tech.reliab.course.panovvd.bank.entity.*;
+import tech.reliab.course.panovvd.bank.exceptions.CreditValidatingException;
 import tech.reliab.course.panovvd.bank.service.BankService;
 import tech.reliab.course.panovvd.bank.service.EmployeeService;
 
@@ -42,6 +43,7 @@ public class DefaultEmployeeService implements EmployeeService {
         newOne.setName(emplName);
         newOne.setBirthday(Date.from(Instant.now()));
         newOne.setSalary(random.nextInt(20001));
+        newOne.setCanCredit(random.nextInt(2) == 1);
         emplRepo.writeNew(newOne); //это должно задать ID
 
         bankService.addEmployee(workplace, workOffice, newOne);
@@ -72,5 +74,10 @@ public class DefaultEmployeeService implements EmployeeService {
     @Override
     public List<Employee> requestEmployeesByOffice(BankOffice office) {
         return emplRepo.requestEmployeesByOffice(office.getId());
+    }
+
+    public void validateCanLoan(Employee employee) {
+        if (employee.isRemote()) throw new CreditValidatingException("Сотрудника нет в офисе он работает удалённо");
+        if (!employee.isCanCredit()) throw new CreditValidatingException("Сотрудник не наделен полномочиями давать кредиты");
     }
 }

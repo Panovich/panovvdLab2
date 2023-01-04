@@ -12,6 +12,8 @@ import java.util.List;
 @Getter @Setter
 public class User extends Man {
     private String workplace;
+    private String login;
+    private String password;
     private int salary;
     private List<Bank> banksUsing; //TODO: к удалению, выдаёт БД
     private List<CreditAccount> creditAccounts; //TODO: к удалению, выдаёт БД

@@ -3,6 +3,9 @@ package tech.reliab.course.panovvd.bank.service.impl;
 import lombok.AllArgsConstructor;
 import tech.reliab.course.panovvd.bank.database.OfficeRepository;
 import tech.reliab.course.panovvd.bank.entity.*;
+import tech.reliab.course.panovvd.bank.exceptions.BankException;
+import tech.reliab.course.panovvd.bank.exceptions.CreditValidatingException;
+import tech.reliab.course.panovvd.bank.exceptions.OutOfMoneyException;
 import tech.reliab.course.panovvd.bank.service.BankOfficeService;
 import tech.reliab.course.panovvd.bank.service.BankService;
 
@@ -98,5 +101,23 @@ public class DefaultBankOfficeService implements BankOfficeService {
     @Override
     public List<BankOffice> requestBankOffices(Bank bank) {
         return officeRepo.requestOfficesByBank(bank.getId());
+    }
+
+    public void validateCanLoan(BankOffice office) {
+        if (!office.isOnline()) throw new CreditValidatingException("Выбранный офис не работает");
+        if (!office.isLoanAvail()) throw new CreditValidatingException("Выбранный офис не выдает кредиты");
+    }
+
+    public int withdrawMoney(BankOffice office, int loanMoney, boolean allowTransfer) {
+        if (office.getMoney() < loanMoney && !allowTransfer) throw new OutOfMoneyException("В офисе нет столько денег");
+        if (office.getMoney() < loanMoney) {
+            int remain = loanMoney - office.getMoney();
+            office.setMoney(0);
+            return remain;
+        } else {
+            int remain = office.getMoney() - loanMoney;
+            office.setMoney(remain);
+            return 0;
+        }
     }
 }
