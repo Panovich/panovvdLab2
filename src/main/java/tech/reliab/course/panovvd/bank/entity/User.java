@@ -6,11 +6,12 @@ import lombok.Setter;
 import lombok.ToString;
 import tech.reliab.course.panovvd.bank.entity.base.Man;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Getter @Setter
-public class User extends Man {
+public class User extends Man implements Serializable {
     private String workplace;
     private String login;
     private String password;

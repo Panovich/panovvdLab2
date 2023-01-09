@@ -3,10 +3,11 @@ package tech.reliab.course.panovvd.bank.entity;
 import lombok.*;
 import tech.reliab.course.panovvd.bank.entity.base.Man;
 
+import java.io.Serializable;
 import java.util.Date;
 //@ToString(exclude = {"workplace", "workOffice"})
 @Getter @Setter
-public class Employee extends Man {
+public class Employee extends Man implements Serializable {
     private String post;
     private Bank workplace;
     private boolean isRemote;

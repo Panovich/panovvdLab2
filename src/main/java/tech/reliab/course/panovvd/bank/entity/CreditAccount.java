@@ -6,11 +6,12 @@ import lombok.Setter;
 import lombok.ToString;
 import tech.reliab.course.panovvd.bank.entity.base.Account;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 //@ToString(exclude = {"issuer", "assignedEmployee", "payementAccount"})
 @Getter @Setter
-public class CreditAccount extends Account {
+public class CreditAccount extends Account implements Serializable {
     private Bank issuer;
     private LocalDate issued;
     private LocalDate expiration;

@@ -5,9 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import tech.reliab.course.panovvd.bank.entity.base.Account;
+
+import java.io.Serializable;
+
 //@ToString(exclude = {"issuedBy"})
 @Getter @Setter
-public class PaymentAccount extends Account {
+public class PaymentAccount extends Account implements Serializable {
     private Bank issuedBy;
     private int money = 0;
 

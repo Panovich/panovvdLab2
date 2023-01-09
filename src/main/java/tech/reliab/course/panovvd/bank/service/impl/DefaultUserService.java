@@ -1,12 +1,15 @@
 package tech.reliab.course.panovvd.bank.service.impl;
 
+import lombok.SneakyThrows;
 import tech.reliab.course.panovvd.bank.database.CreditAccountRepository;
 import tech.reliab.course.panovvd.bank.database.PayementAccountRepository;
 import tech.reliab.course.panovvd.bank.database.UserRepository;
 import tech.reliab.course.panovvd.bank.entity.*;
 import tech.reliab.course.panovvd.bank.exceptions.AuthException;
+import tech.reliab.course.panovvd.bank.model.UserAccountsModel;
 import tech.reliab.course.panovvd.bank.service.UserService;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -110,5 +113,25 @@ public class DefaultUserService implements UserService {
         return selectedUser;
     }
 
+    public UserAccountsModel exportUserAccounts(String filename, Bank owner, List<PaymentAccount> payAccs, List<CreditAccount> credAccs) throws IOException {
+        UserAccountsModel model = new UserAccountsModel();
+        model.setCreditAccount(credAccs);
+        model.setPaymentAccounts(payAccs);
+        model.setBankID(owner.getId());
 
+        try (FileOutputStream fileOutputStream = new FileOutputStream(filename);
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);) {
+            objectOutputStream.writeObject(model);
+        }
+        return model;
+    }
+
+    public UserAccountsModel importUserAccounts (String filename) throws IOException, ClassNotFoundException {
+        try (FileInputStream fileInputStream = new FileInputStream(filename);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);)
+        {
+            UserAccountsModel model = (UserAccountsModel)objectInputStream.readObject();
+            return model;
+        }
+    }
 }

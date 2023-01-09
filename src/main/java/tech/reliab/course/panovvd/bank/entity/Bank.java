@@ -6,8 +6,10 @@ import lombok.Setter;
 import lombok.ToString;
 import tech.reliab.course.panovvd.bank.service.BankService;
 
+import java.io.Serializable;
+
 @Getter @Setter @Builder @ToString
-public class Bank {
+public class Bank implements Serializable {
     private int Id;
     private String Name;
     int officeCount = 0;

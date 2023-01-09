@@ -4,6 +4,7 @@ import tech.reliab.course.panovvd.bank.entity.*;
 import tech.reliab.course.panovvd.bank.exceptions.AuthException;
 import tech.reliab.course.panovvd.bank.exceptions.BankException;
 import tech.reliab.course.panovvd.bank.exceptions.UserCancelException;
+import tech.reliab.course.panovvd.bank.model.UserAccountsModel;
 import tech.reliab.course.panovvd.bank.service.PaymentAccountService;
 import tech.reliab.course.panovvd.bank.service.impl.*;
 
@@ -136,6 +137,8 @@ public class Main {
         //создаём 5 клиентов и лепим к ним по 2 счета в рандомных банках
         for (int i = 0; i < 5; i++) {
             User newUser = userService.create(createRandomName(), "Завод", new Date());
+            newUser.setLogin(String.valueOf(i));
+            newUser.setPassword(String.valueOf(i));
             //Добавляется 2 счета в разных банках
             for (int j = 0; j < 2; j++) {
                 Bank selectedBank;
@@ -145,6 +148,7 @@ public class Main {
 
                 //обычный счет
                 var paymentAccount = paymentAccountService.create(newUser, selectedBank);
+                paymentAccount.setMoney(random.nextInt(20001));
                 //кредитный счет
                 int creditMoney = random.nextInt(10000);
                 int creditTimeMonths = random.nextInt(13);
@@ -167,8 +171,8 @@ public class Main {
         System.out.println("2) Создание платежного счета");
         System.out.println("3) Получение данных о счетах");
         System.out.println("4) Экспорт счетов из банка в txt");
-        System.out.println("5) Перенос счета в другой банк из txt");
-        System.out.println("4) Выход");
+        System.out.println("5) Перенос счетов из txt в другой банк");
+        System.out.println("6) Выход");
     }
 
     public static int userSelectNumber(int max) {
@@ -385,6 +389,27 @@ public class Main {
             System.out.println(bank);
             printDetails(bank);
         }
+        //пользователи (отладка)
+        //вывод пользователей со счетами
+        System.out.println();
+        System.out.println("Пользователи");
+        var users = userService.requestAllUsers();
+        for (var user: users) {
+            System.out.println(user);
+            System.out.println("Платежные счета:");
+            var payementAccounts = paymentAccountService.requestUserAccounts(user);
+            for (var acc: payementAccounts) {
+                System.out.print('\t');
+                System.out.println(acc);
+            }
+            System.out.println("Кредитные счета:");
+            var creditAccounts = creditAccountService.requestUserAccounts(user);
+            for (var acc: creditAccounts) {
+                System.out.print('\t');
+                System.out.println(acc);
+            }
+            System.out.println();
+        }
 
 
         Scanner scanner = new Scanner(System.in);
@@ -433,6 +458,35 @@ public class Main {
                         printUserAccountsByBank(selectedBank, userAccount);
                     }
                     case 4 -> {
+                        Bank selectedBank = selectBank();
+                        System.out.print("Имя файла для экспорта аккаунтов: ");
+                        String filename = scanner.nextLine();
+                        filename = scanner.nextLine();
+                        var payAccs = paymentAccountService.requestUserAccountsByBank(userAccount, selectedBank);
+                        var credAccs = creditAccountService.requestUserAccountsByBank(userAccount, selectedBank);
+                        userService.exportUserAccounts(filename, selectedBank, payAccs, credAccs);
+                        System.out.println("Успешно");
+                    }
+                    case 5 -> {
+                        Bank selectedBank = selectBank();
+                        System.out.print("Имя файла для переноса аккаунтов: ");
+                        scanner.nextLine();
+                        String filename = scanner.nextLine();
+                        var model = userService.importUserAccounts(filename);
+                        for (var acc: model.getPaymentAccounts()) {
+                            acc.setIssuedBy(selectedBank);
+                            acc.setOwner(userAccount);
+                            paymentAccountService.update(acc);
+                        }
+                        for (var acc: model.getCreditAccount()) {
+                            acc.setIssuer(selectedBank);
+                            acc.setOwner(userAccount);
+                            creditAccountService.update(acc);
+                        }
+                        System.out.println("Успешно");
+                    }
+
+                    case 6 -> {
                         System.out.println("Всего доброго!");
                         logOut = true;
                     }
@@ -448,27 +502,14 @@ public class Main {
             catch (InputMismatchException err) {
                 System.out.println("Ошибка ввода");
             }
-        }
-
-        //вывод пользователей со счетами
-        System.out.println();
-        System.out.println("Пользователи");
-        var users = userService.requestAllUsers();
-        for (var user: users) {
-            System.out.println(user);
-            System.out.println("Платежные счета:");
-            var payementAccounts = paymentAccountService.requestUserAccounts(user);
-            for (var acc: payementAccounts) {
-                System.out.print('\t');
-                System.out.println(acc);
+            catch (IOException e) {
+                System.out.println("Ошибка создания файла: ");
+                System.out.println(e.toString());
             }
-            System.out.println("Кредитные счета:");
-            var creditAccounts = creditAccountService.requestUserAccounts(user);
-            for (var acc: creditAccounts) {
-                System.out.print('\t');
-                System.out.println(acc);
+            catch (ClassNotFoundException e) {
+                System.out.println("Формат файла неверен: ");
+                System.out.println(e.toString());
             }
-            System.out.println();
         }
     }
 }

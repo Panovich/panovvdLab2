@@ -79,4 +79,9 @@ public class DefaultCreditAccountService implements CreditAccountService {
     public List<CreditAccount> requestUserAccounts(User user) {
         return creditAccountRepo.requestAccountsByOwner(user.getId());
     }
+
+    public List<CreditAccount> requestUserAccountsByBank(User user, Bank target) {
+        var accounts = requestUserAccounts(user);
+        return accounts.stream().filter(x -> x.getIssuer().getId() == target.getId()).toList();
+    }
 }

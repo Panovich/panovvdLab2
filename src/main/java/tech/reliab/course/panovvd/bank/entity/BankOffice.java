@@ -4,9 +4,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.io.Serializable;
+
 //@ToString(exclude = {"owner"})
 @Getter @Setter @Builder
-public class BankOffice {
+public class BankOffice implements Serializable {
     private int id;
     private String name;
     private String address;
